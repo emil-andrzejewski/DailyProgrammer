@@ -2,20 +2,51 @@ import java.io.RandomAccessFile;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Scanner;
 import java.io.File;
 import java.io.FileNotFoundException;
 
 public class Main {
+	
+	public static void displayTabSquare(int tab[][], String comment) {
+		System.out.println(comment);
+		StringBuffer s = new StringBuffer("");
+		for(int x[]: tab) {
+			for (int y: x) {
+				s.append(y);
+				s.append(" ");
+			}
+			s.append("\n");
+		}
+		System.out.println(s);
+	}
+	
+	// Is one process ready to end?
+	// Needed:
+	// - resourcesKinds - number of kinds of resources
+	// - resources - avaiable resources
+	// - ProcessAllocated[] - allocated resources of one process
+	// - ProcessMaxToAllocate[]  - max resources  of one process
+	public static boolean isProcessReadyToEnd(int resourcesKinds, int[] resources,int[] processAllocated, int[] processMaxToAllocate) {
+		for(int i=0;i<resourcesKinds; i++) {
+			if(!((processMaxToAllocate[i]-processAllocated[i]) <= resources[i])) return false;
+		}		
+		return true;
+	}
 
 	public static void main(String[] args) throws FileNotFoundException {
 		int numberOfProcesses;
 		int resourcesKinds;
 		ArrayList<String> wersy = new ArrayList<String>();
-		ArrayList resources = new ArrayList();
+		List<Integer> resourcesList = new ArrayList<Integer>();	
+		int[] resourcesInt;
 		int processAllocated[][];
 		int processMaxToAllocate[][];
+		int sequenceOfEndingProcesses;
+		int processesQueued;
 
 		File file = new File("data.txt");
 		Scanner sc = new Scanner(file);
@@ -34,19 +65,28 @@ public class Main {
 			wersy.add(linia);
 		}
 		sc.close();
-		numberOfProcesses = wersy.size();
+		numberOfProcesses = wersy.size();	//tu zapisuje ile jest procesów
+		sequenceOfEndingProcesses = numberOfProcesses;
 
 		// gathering info about avaiable resources
 		nrFirst = fistLine.indexOf("[");
 		nrLast = fistLine.indexOf("]");
 		sc = new Scanner(fistLine.substring(nrFirst + 1, nrLast - nrFirst));
 		while (sc.hasNextInt()) {
-			resources.add(sc.nextInt());
+			resourcesList.add(sc.nextInt());
 		}
-		resourcesKinds = resources.size(); // info about number of separate resources
+		resourcesKinds = resourcesList.size(); // info about number of separate resources
+		resourcesInt = new int[resourcesKinds];
 		sc.close();
+		sc = new Scanner(fistLine.substring(nrFirst + 1, nrLast - nrFirst));
+		for(int i=0;i<resourcesKinds;i++) { //konwersja arrayList to int[]
+			resourcesInt[i]=sc.nextInt();
+		}		
+		sc.close();
+		
+		
 
-		// gathering info about processes and their max needs
+		// gathering info about processes (how much resources they have now) and their max needs
 		processAllocated = new int[numberOfProcesses][resourcesKinds];
 		processMaxToAllocate = new int[numberOfProcesses][resourcesKinds];
 		for (int j = 0; j < numberOfProcesses; j++) {
@@ -62,22 +102,18 @@ public class Main {
 				processMaxToAllocate[j][i] = sc.nextInt();
 			}
 		}
-		// iter = wersy.get(0).;
-		// System.out.println(iter.next());
-		// System.out.println(iter.next());
-		// while() {
+		
+		//Wyswietlenie tablicy zaalokowany procesow
+		displayTabSquare(processAllocated,"Zaalokowane procesy");
+		
+		// displaing max needs of processes
+		displayTabSquare(processMaxToAllocate,"Max needs of processes");
 
-		// resources.add(wersy.get(0).charAt(1));
-		// System.out.println(resources.get(0));
-		// }
+		processesQueued=0;
+		for (int i=0;i<numberOfProcesses;i++) {
+			System.out.println(isProcessReadyToEnd(resourcesKinds,resourcesInt,processAllocated[i],processMaxToAllocate[i]));
+		}
 
-		// Object[] wers = wersy.toArray();for(
-		// int i = 0;i<wers.length;i++)
-		// {
-		// // System.out.println(wers[i].toString());
-		// }
-
-		// System.out.println(wersy.get(0) + " " + wersy.get(1) + " " + wersy.get(0));
 		System.out.println("ldl");
 	}
 }
