@@ -10,12 +10,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 public class Main {
-	
+
 	public static void displayTabSquare(int tab[][], String comment) {
 		System.out.println(comment);
 		StringBuffer s = new StringBuffer("");
-		for(int x[]: tab) {
-			for (int y: x) {
+		for (int x[] : tab) {
+			for (int y : x) {
 				s.append(y);
 				s.append(" ");
 			}
@@ -23,17 +23,19 @@ public class Main {
 		}
 		System.out.println(s);
 	}
-	
+
 	// Is one process ready to end?
 	// Needed:
 	// - resourcesKinds - number of kinds of resources
 	// - resources - avaiable resources
 	// - ProcessAllocated[] - allocated resources of one process
-	// - ProcessMaxToAllocate[]  - max resources  of one process
-	public static boolean isProcessReadyToEnd(int resourcesKinds, int[] resources,int[] processAllocated, int[] processMaxToAllocate) {
-		for(int i=0;i<resourcesKinds; i++) {
-			if(!((processMaxToAllocate[i]-processAllocated[i]) <= resources[i])) return false;
-		}		
+	// - ProcessMaxToAllocate[] - max resources of one process
+	public static boolean isProcessReadyToEnd(int resourcesKinds, int[] resources, int[] processAllocated,
+			int[] processMaxToAllocate) {
+		for (int i = 0; i < resourcesKinds; i++) {
+			if (!((processMaxToAllocate[i] - processAllocated[i]) <= resources[i]))
+				return false;
+		}
 		return true;
 	}
 
@@ -41,12 +43,13 @@ public class Main {
 		int numberOfProcesses;
 		int resourcesKinds;
 		ArrayList<String> wersy = new ArrayList<String>();
-		List<Integer> resourcesList = new ArrayList<Integer>();	
+		List<Integer> resourcesList = new ArrayList<Integer>();
 		int[] resourcesInt;
 		int processAllocated[][];
 		int processMaxToAllocate[][];
-		int sequenceOfEndingProcesses;
+		int sequenceOfEndingProcesses[];
 		int processesQueued;
+		boolean safeSituation;
 
 		File file = new File("data.txt");
 		Scanner sc = new Scanner(file);
@@ -65,8 +68,7 @@ public class Main {
 			wersy.add(linia);
 		}
 		sc.close();
-		numberOfProcesses = wersy.size();	//tu zapisuje ile jest procesów
-		sequenceOfEndingProcesses = numberOfProcesses;
+		numberOfProcesses = wersy.size(); // tu zapisuje ile jest procesów
 
 		// gathering info about avaiable resources
 		nrFirst = fistLine.indexOf("[");
@@ -79,14 +81,13 @@ public class Main {
 		resourcesInt = new int[resourcesKinds];
 		sc.close();
 		sc = new Scanner(fistLine.substring(nrFirst + 1, nrLast - nrFirst));
-		for(int i=0;i<resourcesKinds;i++) { //konwersja arrayList to int[]
-			resourcesInt[i]=sc.nextInt();
-		}		
+		for (int i = 0; i < resourcesKinds; i++) { // konwersja arrayList to int[]
+			resourcesInt[i] = sc.nextInt();
+		}
 		sc.close();
-		
-		
 
-		// gathering info about processes (how much resources they have now) and their max needs
+		// gathering info about processes (how much resources they have now) and their
+		// max needs
 		processAllocated = new int[numberOfProcesses][resourcesKinds];
 		processMaxToAllocate = new int[numberOfProcesses][resourcesKinds];
 		for (int j = 0; j < numberOfProcesses; j++) {
@@ -102,18 +103,53 @@ public class Main {
 				processMaxToAllocate[j][i] = sc.nextInt();
 			}
 		}
-		
-		//Wyswietlenie tablicy zaalokowany procesow
-		displayTabSquare(processAllocated,"Zaalokowane procesy");
-		
-		// displaing max needs of processes
-		displayTabSquare(processMaxToAllocate,"Max needs of processes");
 
-		processesQueued=0;
-		for (int i=0;i<numberOfProcesses;i++) {
-			System.out.println(isProcessReadyToEnd(resourcesKinds,resourcesInt,processAllocated[i],processMaxToAllocate[i]));
+		// Wyswietlenie tablicy zaalokowany procesow
+		displayTabSquare(processAllocated, "Zaalokowane procesy");
+
+		// displaing max needs of processes
+		displayTabSquare(processMaxToAllocate, "Max needs of processes");
+
+		// szukanie kolejki wyjscia i sprawdzenie czy sytuacja jest bezpieczna
+		processesQueued = 0;
+		sequenceOfEndingProcesses = new int[numberOfProcesses];
+		safeSituation = false;
+		for (int j = 0; j < numberOfProcesses; j++) { // przejsc bedzie maksymalnie tyle ile jest procesow
+			int i = 0;
+			while (i < numberOfProcesses) {
+				boolean isProcessQueued = false;
+				for (int k = 0; k < processesQueued; k++) {
+					if (sequenceOfEndingProcesses[k] == i)
+						isProcessQueued = true;
+				}
+				if (!isProcessQueued) {
+					if (isProcessReadyToEnd(resourcesKinds, resourcesInt, processAllocated[i],
+							processMaxToAllocate[i])) { // jesli znaleziono proces do skonczenia
+						sequenceOfEndingProcesses[processesQueued++] = i; // dodanie numeru procesu do kolejki konczenia procesow
+//						processesQueued++;
+						for (int k = 0; k < resourcesKinds; k++) {
+							resourcesInt[k] += processAllocated[i][k];
+							System.out.print(resourcesInt[k] + " ");
+						}
+						System.out.println("");
+					}
+				}
+				i++;
+			}
+			if (processesQueued == numberOfProcesses) {
+				safeSituation = true;
+				j=numberOfProcesses;
+				break;
+			}
 		}
 
-		System.out.println("ldl");
+		System.out.println("Sytuacja bezpieczna?: " + safeSituation);
+		if (safeSituation) {
+			System.out.println("Kojelka zadan do skonczenia: ");
+			for (int x : sequenceOfEndingProcesses) {
+				System.out.print("P" + x + ", ");
+			}
+			System.out.println("");
+		}
 	}
 }
