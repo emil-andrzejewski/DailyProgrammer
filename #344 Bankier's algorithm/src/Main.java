@@ -127,6 +127,7 @@ public class Main {
 							processMaxToAllocate[i])) { // jesli znaleziono proces do skonczenia
 						sequenceOfEndingProcesses[processesQueued++] = i; // dodanie numeru procesu do kolejki konczenia procesow
 //						processesQueued++;
+						System.out.print("Process ready to finish: P"+i+", resources now: ");
 						for (int k = 0; k < resourcesKinds; k++) {
 							resourcesInt[k] += processAllocated[i][k];
 							System.out.print(resourcesInt[k] + " ");
