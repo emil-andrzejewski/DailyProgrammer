@@ -1,15 +1,11 @@
-import java.io.RandomAccessFile;
-import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 import java.io.File;
 import java.io.FileNotFoundException;
 
 public class Main {
+
 
 	public static void displayTabSquare(int tab[][], String comment) {
 		System.out.println(comment);
@@ -23,6 +19,7 @@ public class Main {
 		}
 		System.out.println(s);
 	}
+
 
 	// Is one process ready to end?
 	// Needed:
@@ -54,7 +51,7 @@ public class Main {
 		File file = new File("data.txt");
 		Scanner sc = new Scanner(file);
 		String fistLine = new String();
-		int znak, nrFirst, nrLast;
+		int nrFirst, nrLast;
 
 		// pobranie do String buffera pierwszej linii z info o avaiable resources
 		if (sc.hasNext()) {
@@ -125,9 +122,9 @@ public class Main {
 				if (!isProcessQueued) {
 					if (isProcessReadyToEnd(resourcesKinds, resourcesInt, processAllocated[i],
 							processMaxToAllocate[i])) { // jesli znaleziono proces do skonczenia
-						sequenceOfEndingProcesses[processesQueued++] = i; // dodanie numeru procesu do kolejki konczenia procesow
-//						processesQueued++;
-						System.out.print("Process ready to finish: P"+i+", resources now: ");
+						sequenceOfEndingProcesses[processesQueued++] = i; // dodanie numeru procesu do kolejki konczenia
+																			// procesow
+						System.out.print("Process ready to finish: P" + i + ", resources now: ");
 						for (int k = 0; k < resourcesKinds; k++) {
 							resourcesInt[k] += processAllocated[i][k];
 							System.out.print(resourcesInt[k] + " ");
@@ -139,8 +136,7 @@ public class Main {
 			}
 			if (processesQueued == numberOfProcesses) {
 				safeSituation = true;
-				j=numberOfProcesses;
-				break;
+				j = numberOfProcesses;
 			}
 		}
 
