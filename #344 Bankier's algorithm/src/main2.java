@@ -35,8 +35,7 @@ public class main2 {
 	}
 
 	public static Problem readfile(String inputFile) throws IOException {
-		List<List<Integer>> allLines = Files.readAllLines(Paths.get(inputFile)).stream()
-				.map(l -> l.replaceAll("[\\[\\]]", ""))
+		List<List<Integer>> allLines = Files.readAllLines(Paths.get(inputFile)).stream().map(l -> l.replaceAll("[\\[\\]]", ""))
 				.map(l -> Arrays.stream(l.split(" ")).map(Integer::parseInt).collect(toList())).collect(toList());
 		return new Problem(allLines.get(0), allLines.subList(1, allLines.size()));
 	}
