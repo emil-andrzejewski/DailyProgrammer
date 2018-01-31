@@ -20,5 +20,21 @@ public class Process {
 		this.used = used;
 	}
 	
+	@Override
+	public String toString() {
+		StringBuilder str = new StringBuilder();
+		str.append("Allocated: ");
+		for(int s :used) {
+			str.append(s);
+			str.append(" ");
+		}
+		str.append("\t Max needs: ");
+		for(int s :max) {
+			str.append(s);
+			str.append(" ");
+		}
+		return str.toString();
+	}
+	
 	
 }

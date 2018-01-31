@@ -1,5 +1,5 @@
 
-public class Resources {
+public class Resource {
 	private int reso;	//avaiable resource
 
 	public int getReso() {
@@ -10,7 +10,7 @@ public class Resources {
 		this.reso = reso;
 	}
 
-	public Resources(int reso) {
+	public Resource(int reso) {
 		super();
 		this.reso = reso;
 	}
