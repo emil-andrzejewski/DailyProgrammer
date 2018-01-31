@@ -27,10 +27,10 @@ public class Main {
 	// - resources - avaiable resources
 	// - ProcessAllocated[] - allocated resources of one process
 	// - ProcessMaxToAllocate[] - max resources of one process
-	public static boolean isProcessReadyToEnd(int resourcesKinds, int[] resources, int[] processAllocated,
+	public static boolean isProcessReadyToEnd(int resourcesKinds, ArrayList<Resources> reso, int[] processAllocated,
 			int[] processMaxToAllocate) {
 		for (int i = 0; i < resourcesKinds; i++) {
-			if (!((processMaxToAllocate[i] - processAllocated[i]) <= resources[i]))
+			if (!((processMaxToAllocate[i] - processAllocated[i]) <= reso.get(i).getReso()))
 				return false;
 		}
 		return true;
@@ -40,8 +40,9 @@ public class Main {
 		int numberOfProcesses;
 		int resourcesKinds;
 		ArrayList<String> wersy = new ArrayList<String>();
-		List<Integer> resourcesList = new ArrayList<Integer>();
-		int[] resourcesInt;
+		ArrayList<Resources> reso = new ArrayList<Resources>();
+		ArrayList<Process> procs = new ArrayList<Process>();
+//		int[] reso;
 		int processAllocated[][];
 		int processMaxToAllocate[][];
 		int sequenceOfEndingProcesses[];
@@ -56,6 +57,16 @@ public class Main {
 		// pobranie do String buffera pierwszej linii z info o avaiable resources
 		if (sc.hasNext()) {
 			fistLine = sc.nextLine();
+			
+			//gathering number of resources i their values
+			nrFirst = fistLine.indexOf("[");
+			nrLast = fistLine.indexOf("]");
+			Scanner sc2 = new Scanner(fistLine.substring(nrFirst + 1, nrLast - nrFirst));
+			while (sc2.hasNextInt()) {
+				reso.add(new Resources(sc.nextInt()));
+			}
+			sc2.close();
+			reso.toString();
 			// System.out.println("znak: "+fistLine);
 		}
 
@@ -68,18 +79,15 @@ public class Main {
 		numberOfProcesses = wersy.size(); // tu zapisuje ile jest procesów
 
 		// gathering info about avaiable resources
-		nrFirst = fistLine.indexOf("[");
-		nrLast = fistLine.indexOf("]");
-		sc = new Scanner(fistLine.substring(nrFirst + 1, nrLast - nrFirst));
-		while (sc.hasNextInt()) {
-			resourcesList.add(sc.nextInt());
-		}
-		resourcesKinds = resourcesList.size(); // info about number of separate resources
-		resourcesInt = new int[resourcesKinds];
+		
+		
+		
+		resourcesKinds = reso.size(); // info about number of separate resources
+//		reso = new int[resourcesKinds];
 		sc.close();
-		sc = new Scanner(fistLine.substring(nrFirst + 1, nrLast - nrFirst));
+//		sc = new Scanner(fistLine.substring(nrFirst + 1, nrLast - nrFirst));
 		for (int i = 0; i < resourcesKinds; i++) { // konwersja arrayList to int[]
-			resourcesInt[i] = sc.nextInt();
+		//	reso[i] = sc.nextInt();
 		}
 		sc.close();
 
@@ -120,14 +128,16 @@ public class Main {
 						isProcessQueued = true;
 				}
 				if (!isProcessQueued) {
-					if (isProcessReadyToEnd(resourcesKinds, resourcesInt, processAllocated[i],
+					if (isProcessReadyToEnd(resourcesKinds, reso, processAllocated[i],
 							processMaxToAllocate[i])) { // jesli znaleziono proces do skonczenia
 						sequenceOfEndingProcesses[processesQueued++] = i; // dodanie numeru procesu do kolejki konczenia
 																			// procesow
 						System.out.print("Process ready to finish: P" + i + ", resources now: ");
 						for (int k = 0; k < resourcesKinds; k++) {
-							resourcesInt[k] += processAllocated[i][k];
-							System.out.print(resourcesInt[k] + " ");
+							int temp = reso.get(k).getReso();
+//							reso.set(k, temp+);
+							reso.get(k).setReso(temp+processAllocated[i][k]);
+							System.out.print(reso.get(k) + " ");
 						}
 						System.out.println("");
 					}
